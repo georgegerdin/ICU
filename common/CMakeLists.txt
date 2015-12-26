@@ -1,4 +1,8 @@
-﻿SET(SRCS
+﻿# Required modules
+include(GNUInstallDirs)
+include(CheckIncludeFiles)
+
+SET(SRCS
 	filteredbrk.cpp ubidi.c ubidi_props.c ubidiln.c ubidiwrt.c uloc_keytype.cpp ushape.cpp brkeng.cpp 
 	brkiter.cpp dictbe.cpp pluralmap.cpp rbbi.cpp rbbidata.cpp rbbinode.cpp rbbirb.cpp rbbiscan.cpp rbbisetb.cpp 
 	rbbistbl.cpp rbbitblb.cpp dictionarydata.cpp ubrk.cpp ucol_swp.cpp propsvec.c uarrsort.c uenum.c uhash.c 
@@ -53,9 +57,13 @@ add_definitions("-DU_COMMON_IMPLEMENTATION")
 if(BUILD_SHARED)
 	add_library(icuuc SHARED ${ICUUC_SRCS})
 	target_link_libraries(icuuc stubdata)
+	set_target_properties(icuuc PROPERTIES OUTPUT_NAME "icuuc${ICU_VERSION_MAJOR}")
+	install(TARGETS icuuc RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
 if(BUILD_STATIC)
 	add_library(sicuuc ${ICUUC_SRCS})
 	set_target_properties(sicuuc PROPERTIES COMPILE_DEFINITIONS "U_STATIC_IMPLEMENTATION")
+	set_target_properties(sicuuc PROPERTIES OUTPUT_NAME "sicuuc${ICU_VERSION_MAJOR}")
 	target_link_libraries(sicuuc stubdata_static)
+	install(TARGETS sicuuc RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
