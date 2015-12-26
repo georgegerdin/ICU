@@ -1,0 +1,14 @@
+set(STUBDATA_SRCS "${CMAKE_CURRENT_LIST_DIR}/stubdata.c")
+
+add_definitions("-DSTUBDATA_BUILD")
+include_directories(${COMMON_INCLUDE_DIR})
+
+if(BUILD_SHARED)
+	add_library(stubdata SHARED ${STUBDATA_SRCS})
+	set_target_properties(stubdata PROPERTIES OUTPUT_NAME "icudt${ICU_VERSION_MAJOR}")
+endif()
+if(BUILD_STATIC)
+	add_library(stubdata_static ${STUBDATA_SRCS})
+	set_target_properties(stubdata_static PROPERTIES OUTPUT_NAME "sicudt${ICU_VERSION_MAJOR}")
+	set_target_properties(stubdata_static PROPERTIES COMPILE_DEFINITIONS "U_STATIC_IMPLEMENTATION")
+endif()
