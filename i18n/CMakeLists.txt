@@ -1,8 +1,4 @@
-﻿# Required modules
-include(GNUInstallDirs)
-include(CheckIncludeFiles)
-
-set(SRCS
+﻿set(SRCS
 	region.cpp uregion.cpp alphaindex.cpp bocsu.cpp coleitr.cpp coll.cpp collation.cpp collationbuilder.cpp 
 	collationcompare.cpp collationdata.cpp collationdatabuilder.cpp collationdatareader.cpp collationdatawriter.cpp 
 	collationfastlatin.cpp collationfastlatinbuilder.cpp collationfcd.cpp collationiterator.cpp collationkeys.cpp 
@@ -67,19 +63,9 @@ foreach(e ${SRCS})
 	set(ICUIN_SRCS "${ICUIN_SRCS}" "${CMAKE_CURRENT_LIST_DIR}/${e}")
 endforeach()
 
-add_definitions("-DU_I18N_IMPLEMENTATION")
-include_directories(${COMMON_INCLUDE_DIR})
+set(I18N_SRCS ${ICUIN_SRCS} PARENT_SCOPE)
 
-if(BUILD_SHARED)
-	add_library(icuin SHARED ${ICUIN_SRCS})
-	target_link_libraries(icuin icuuc)
-	set_target_properties(icuin PROPERTIES OUTPUT_NAME "icuin${ICU_VERSION_MAJOR}")
-	install(TARGETS icuin RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR})
-endif()
-if(BUILD_STATIC)
-	add_library(sicuin ${ICUIN_SRCS})
-	set_target_properties(sicuin PROPERTIES COMPILE_DEFINITIONS "U_STATIC_IMPLEMENTATION")
-	set_target_properties(sicuin PROPERTIES OUTPUT_NAME "sicuin${ICU_VERSION_MAJOR}")
-	target_link_libraries(sicuin sicuuc)
-	install(TARGETS sicuin RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR})
-endif()
+	
+	
+	
+	

@@ -1,8 +1,4 @@
-﻿# Required modules
-include(GNUInstallDirs)
-include(CheckIncludeFiles)
-
-set(SRCS AlternateSubstSubtables.cpp AnchorTables.cpp 
+﻿set(SRCS AlternateSubstSubtables.cpp AnchorTables.cpp 
 	ArabicLayoutEngine.cpp ArabicShaping.cpp CanonData.cpp 
 	CanonShaping.cpp ClassDefinitionTables.cpp 
 	ContextualGlyphInsertionProc2.cpp 
@@ -89,19 +85,6 @@ foreach(e ${SRCS})
 	set(LAYOUT_SRCS "${LAYOUT_SRCS}" "${CMAKE_CURRENT_LIST_DIR}/${e}")
 endforeach()
 
-add_definitions("-DU_LAYOUT_IMPLEMENTATION")
-include_directories(${COMMON_INCLUDE_DIR} ${I18N_INCLUDE_DIR})
+set(LAYOUT_SRCS ${LAYOUT_SRCS} PARENT_SCOPE)
 
-if(BUILD_SHARED)
-	add_library(layout SHARED ${LAYOUT_SRCS})
-	target_link_libraries(layout icuuc icuin)
-	set_target_properties(layout PROPERTIES OUTPUT_NAME "icule${ICU_VERSION_MAJOR}")
-	install(TARGETS layout RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR})
-endif()
-if(BUILD_STATIC)
-	add_library(slayout ${LAYOUT_SRCS})
-	set_target_properties(slayout PROPERTIES OUTPUT_NAME "sicule${ICU_VERSION_MAJOR}")
-	set_target_properties(slayout PROPERTIES COMPILE_DEFINITIONS "U_STATIC_IMPLEMENTATION")
-	target_link_libraries(slayout sicuuc sicuin)
-	install(TARGETS slayout RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR})
-endif()
+	
