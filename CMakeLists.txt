@@ -39,6 +39,16 @@ if(MSVC)
 	add_definitions("-DUCONFIG_ENABLE_PLUGINS")
 endif()
 
+if(UNIX)
+	set(UNIX_MATH_LIB "m")
+	set(UNIX_THREAD_LIB "pthread")
+	add_definitions("-DU_HAVE_ELF_H=1")
+	add_definitions("-DU_HAVE_ATOMIC=1")
+	add_definitions("-DUDATA_SO_SUFFIX=\".so\"")
+else()
+	add_definitions("-DUDATA_SO_SUFFIX=\".dll\"")
+endif()
+
 add_subdirectory(common)
 add_subdirectory(stubdata)
 add_subdirectory(samples)
@@ -110,7 +120,7 @@ if(BUILD_SHARED)
 	target_include_directories(layout		PRIVATE ${COMMON_INCLUDE_DIR} ${I18N_INCLUDE_DIR})
 	target_include_directories(layoutex		PRIVATE ${COMMON_INCLUDE_DIR} ${I18N_INCLUDE_DIR} ${BASE_INCLUDE_DIR})
 	
-	target_link_libraries(common			stubdata)
+	target_link_libraries(common			stubdata ${CMAKE_DL_LIBS})
 	target_link_libraries(i18n 				common)
 	target_link_libraries(io 				common i18n)
 	target_link_libraries(toolutil 			common i18n)
@@ -163,7 +173,7 @@ if(BUILD_STATIC)
 	target_include_directories(sctestfw		PRIVATE ${COMMON_INCLUDE_DIR} ${TOOLUTIL_INCLUDE_DIR})
 	target_include_directories(scommon		PRIVATE ${COMMON_INCLUDE_DIR})
 		
-	target_link_libraries(scommon 			stubdata_static)
+	target_link_libraries(scommon 			stubdata_static ${CMAKE_DL_LIBS})
 	target_link_libraries(si18n 			scommon)
 	target_link_libraries(sio 				scommon si18n)
 	target_link_libraries(stoolutil 		scommon si18n)
@@ -225,7 +235,7 @@ add_executable(intltest ${INTLTEST_SRCS})
 add_executable(iotest ${IOTEST_SRCS})
 add_executable(letest ${LETEST_SRCS})
 
-target_link_libraries(cal ${ICU_I18N_LIBRARY})
+target_link_libraries(cal ${ICU_I18N_LIBRARY} ${CMAKE_DL_LIBS})
 target_link_libraries(date ${ICU_I18N_LIBRARY} ${ICU_COMMON_LIBRARY})
 target_link_libraries(derb ${ICU_IO_LIBRARY} ${ICU_TOOLUTIL_LIBRARY})
 target_link_libraries(genrb ${ICU_IO_LIBRARY} ${ICU_TOOLUTIL_LIBRARY})
@@ -244,8 +254,8 @@ target_link_libraries(makeconv ${ICU_COMMON_LIBRARY} ${ICU_TOOLUTIL_LIBRARY})
 target_link_libraries(pkgdata ${ICU_COMMON_LIBRARY} ${ICU_TOOLUTIL_LIBRARY})
 target_link_libraries(testplug ${ICU_COMMON_LIBRARY} ${ICU_TOOLUTIL_LIBRARY})
 target_link_libraries(uconv ${ICU_COMMON_LIBRARY} ${ICU_TOOLUTIL_LIBRARY})
-target_link_libraries(cintltst ${ICU_COMMON_LIBRARY} ${ICU_CTESTFW_LIBRARY})
-target_link_libraries(intltest ${ICU_COMMON_LIBRARY} ${ICU_CTESTFW_LIBRARY})
+target_link_libraries(cintltst ${ICU_COMMON_LIBRARY} ${ICU_CTESTFW_LIBRARY} ${UNIX_MATH_LIB} ${UNIX_THREAD_LIB})
+target_link_libraries(intltest ${ICU_COMMON_LIBRARY} ${ICU_CTESTFW_LIBRARY} ${UNIX_THREAD_LIB})
 target_link_libraries(iotest ${ICU_COMMON_LIBRARY} ${ICU_IO_LIBRARY} ${ICU_CTESTFW_LIBRARY})
 target_link_libraries(letest ${ICU_COMMON_LIBRARY} ${ICU_LAYOUT_LIBRARY} ${ICU_LAYOUTEX_LIBRARY} ${ICU_CTESTFW_LIBRARY})
 
@@ -254,12 +264,19 @@ if(WIN32)
 else()
 	set(DLLENDING "so")
 endif()
-set(DLLSUFFIX 
-    $<$<CONFIG:Debug>:d>
-    $<$<CONFIG:RelWithDebInfo>:d>
-    $<$<CONFIG:Release>:> 
-    $<$<CONFIG:MinSizeRel>:>
-    )
+
+if(MSVC)
+	set(DLLSUFFIX 
+   		$<$<CONFIG:Debug>:d>
+    		$<$<CONFIG:RelWithDebInfo>:d>
+    		$<$<CONFIG:Release>:> 
+    		$<$<CONFIG:MinSizeRel>:>
+    	)
+else()
+	if(CMAKE_BUILD_TYPE MATCHES DEBUG)
+		set(DLLSUFFIX "d")
+	endif()
+endif()
 
 set(RELEASE_HELPER "\"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/\$\(Configuration\)\"")
 set(UCONV_HELPER "\"${CMAKE_CURRENT_BINARY_DIR}/uconv_resources\"")
@@ -271,15 +288,16 @@ set(TEST_PATH "\"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/\$\(Configuration\)\"")
 set(ICUDTDLL "\"${CMAKE_CURRENT_BINARY_DIR}/icudt${ICU_VERSION_MAJOR}${DLLSUFFIX}.${DLLENDING}\"")
 
 
-
-string(REGEX REPLACE "/" "\\\\" RELEASE_HELPER ${RELEASE_HELPER})
-string(REGEX REPLACE "/" "\\\\" UCONV_HELPER ${UCONV_HELPER})
-string(REGEX REPLACE "/" "\\\\" OUT_TEMP_PATH ${OUT_TEMP_PATH})
-string(REGEX REPLACE "/" "\\\\" IN_DATA_PATH ${IN_DATA_PATH})
-string(REGEX REPLACE "/" "\\\\" OUT_DATA_PATH ${OUT_DATA_PATH})
-string(REGEX REPLACE "/" "\\\\" DEST_PATH ${DEST_PATH})
-string(REGEX REPLACE "/" "\\\\" TEST_PATH ${TEST_PATH})
-string(REGEX REPLACE "/" "\\\\" ICUDTDLL ${ICUDTDLL})
+if(WIN32)
+	string(REGEX REPLACE "/" "\\\\" RELEASE_HELPER ${RELEASE_HELPER})
+	string(REGEX REPLACE "/" "\\\\" UCONV_HELPER ${UCONV_HELPER})
+	string(REGEX REPLACE "/" "\\\\" OUT_TEMP_PATH ${OUT_TEMP_PATH})
+	string(REGEX REPLACE "/" "\\\\" IN_DATA_PATH ${IN_DATA_PATH})
+	string(REGEX REPLACE "/" "\\\\" OUT_DATA_PATH ${OUT_DATA_PATH})
+	string(REGEX REPLACE "/" "\\\\" DEST_PATH ${DEST_PATH})
+	string(REGEX REPLACE "/" "\\\\" TEST_PATH ${TEST_PATH})
+	string(REGEX REPLACE "/" "\\\\" ICUDTDLL ${ICUDTDLL})
+endif()
 
 message(STATUS "Release helper: ${RELEASE_HELPER}")
 message(STATUS "Uconv helper:   ${UCONV_HELPER}")
