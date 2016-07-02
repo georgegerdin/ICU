@@ -336,7 +336,7 @@ add_custom_command(
 	COMMAND ${CMAKE_COMMAND} -E echo pkgdata -f -e icudt${ICU_VERSION_MAJOR}${DLLSUFFIX} -v -m dll -c -p icudt${ICU_VERSION_MAJOR}l -T ${OUT_TEMP_PATH} -L icudt${ICU_VERSION_MAJOR} -d . -s ${DEST_PATH} ${OUT_DATA_PATH}
 	
 	COMMAND icupkg -x * --list ${IN_DATA_PATH} > ${OUT_DATA_PATH}
-	COMMAND pkgdata -f -e icudt${ICU_VERSION_MAJOR}${DLLSUFFIX} -v -m dll -c -p icudt${ICU_VERSION_MAJOR}l -T ${OUT_TEMP_PATH} -L icudt${ICU_VERSION_MAJOR} -d ${DEST_PATH} -s . ${OUT_DATA_PATH}
+	COMMAND pkgdata -f -e icudt${ICU_VERSION_MAJOR}${DLLSUFFIX} -v -m ${DLLENDING} -c -p icudt${ICU_VERSION_MAJOR}l -T ${OUT_TEMP_PATH} -L icudt${ICU_VERSION_MAJOR} -d ${DEST_PATH} -s . ${OUT_DATA_PATH}
 	
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ICUDTDLL} ${RELEASE_HELPER}
 	COMMENT Building icu data from icudt${ICU_VERSION_MAJOR}l.dat
