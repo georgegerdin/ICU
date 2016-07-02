@@ -278,13 +278,20 @@ else()
 	endif()
 endif()
 
-set(RELEASE_HELPER "\"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/\$\(Configuration\)\"")
+if(MSVC)
+	set(RELEASE_HELPER "\"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/\$\(Configuration\)\"")
+	set(DEST_PATH "\"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/\$\(Configuration\)/icudt${ICU_VERSION_MAJOR}l\"")
+	set(TEST_PATH "\"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/\$\(Configuration\)\"")
+else()
+	set(RELEASE_HELPER "\"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/\"")
+	set(DEST_PATH "\"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/icudt${ICU_VERSION_MAJOR}l\"")
+	set(TEST_PATH "\"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/\"")
+endif()
+
 set(UCONV_HELPER "\"${CMAKE_CURRENT_BINARY_DIR}/uconv_resources\"")
 set(OUT_TEMP_PATH "\"${CMAKE_CURRENT_BINARY_DIR}/tmp\"")
 set(IN_DATA_PATH "\"${CMAKE_CURRENT_LIST_DIR}/data/in/icudt${ICU_VERSION_MAJOR}l.dat\"")
 set(OUT_DATA_PATH "\"${CMAKE_CURRENT_BINARY_DIR}/tmp/icudata.lst\"")
-set(DEST_PATH "\"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/\$\(Configuration\)/icudt${ICU_VERSION_MAJOR}l\"")
-set(TEST_PATH "\"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/\$\(Configuration\)\"")
 set(ICUDTDLL "\"${CMAKE_CURRENT_BINARY_DIR}/icudt${ICU_VERSION_MAJOR}${DLLSUFFIX}.${DLLENDING}\"")
 
 
