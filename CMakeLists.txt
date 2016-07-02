@@ -331,7 +331,7 @@ add_custom_command(
 	TARGET makedata
 	PRE_BUILD
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${OUT_TEMP_PATH}
-	COMMAND ${CMAKE_COMMAND} -E echo "${PROJECT_BINARY_DIR}/\$\(Configuration\)/your_library.dll"
+	COMMAND ${CMAKE_COMMAND} -E echo "icupkg -x * --list ${IN_DATA_PATH} > ${OUT_DATA_PATH}"
 	COMMAND ${CMAKE_COMMAND} -E echo "${TEST_PATH}"
 	COMMAND ${CMAKE_COMMAND} -E echo pkgdata -f -e icudt${ICU_VERSION_MAJOR}${DLLSUFFIX} -v -m dll -c -p icudt${ICU_VERSION_MAJOR}l -T ${OUT_TEMP_PATH} -L icudt${ICU_VERSION_MAJOR} -d . -s ${DEST_PATH} ${OUT_DATA_PATH}
 	
